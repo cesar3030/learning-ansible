@@ -1,0 +1,24 @@
+# NOTE:
+#  I had to modify the /etc/ansible/ansible.cfg file in order to have this code working
+#  I added -o ForwardAgent=yes to the ssh_args setting
+#
+
+---
+- hosts: debian1
+  vars :
+    filename: file_from_debian1.txt
+  tasks:
+    - name: Create a file to be copy to debian2 later on 
+      file:
+        path: /tmp/{{ filename }}
+        state: touch
+
+- hosts: debian2
+  vars :
+    filename: file_from_debian1.txt
+  tasks:
+    - name: Move file from debian1 to debian 2
+      synchronize:
+        src: /tmp/{{ filename }}
+        dest: /tmp
+      delegate_to: "{{ groups.debian1[0] }}"
