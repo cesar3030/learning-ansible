@@ -1,0 +1,6 @@
+# Has to be called with -K flag to provide remote sudo pwd
+---
+- hosts: all
+  become: true
+  roles:
+    - common

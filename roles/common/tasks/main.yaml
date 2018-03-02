@@ -1,0 +1,5 @@
+- name: install packages defined in defaults/main.yaml
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages }}"
