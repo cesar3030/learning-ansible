@@ -1,0 +1,10 @@
+---
+- hosts: dbservers
+  vars :
+    page_title: My first template use!
+    filename: index.html
+  tasks:
+    - name: Create a new file in /tmp
+      template:
+        src: index.html.j2      # Searches the template in the `templates/` dir
+        dest: /tmp/{{filename}}
