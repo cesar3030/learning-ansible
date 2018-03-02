@@ -1,0 +1,23 @@
+# NOTE:
+#  I had to modify the /etc/ansible/ansible.cfg file in order to have this code working
+#  I added -o ForwardAgent=yes to the ssh_args setting
+#
+
+---
+# We install common things on all servers
+- hosts: dbservers
+  become: true
+  roles:
+    - common
+
+- hosts: debian2
+  vars :
+    filename: ansible_deb.txt
+  tasks:
+    - name: Move file from debian1 to debian 2
+      synchronize:
+        src: /tmp/{{ filename }}
+        dest: /tmp
+      delegate_to: "{{ groups.debian1[0] }}"
+
+
