@@ -1,0 +1,8 @@
+---
+- hosts: dbservers
+  tasks:
+    - name: Create a new file in /tmp
+      file:
+        path: /tmp/test_no_var.txt
+        state: touch
+
