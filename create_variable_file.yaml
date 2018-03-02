@@ -1,0 +1,9 @@
+---
+- hosts: dbservers
+  vars :
+    file_name: file_from_ansible_variable_name.txt
+  tasks:
+    - name: Create a new file in /tmp
+      file:
+        path: /tmp/{{file_name}}
+        state: touch
