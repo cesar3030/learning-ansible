@@ -1,0 +1,11 @@
+---
+- hosts: dbservers
+  become: true
+  vars:
+    dump_file_name: dump_employees.sql
+  tasks:
+    - name: Creates a dump of the employees db and store it in /tmp
+      mysql_db:
+        state: dump
+        name: employees
+        target: /tmp/{{dump_file_name}}
