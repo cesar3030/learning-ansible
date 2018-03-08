@@ -1,0 +1,64 @@
+# The script adds a mysql role to the servers, then imports more data in the debian1 db, 
+#  makes a dump of both debian1 and 2 dbs, transfers dumb debian1 in debian2 and applies debian1's dump to debian2's db that way dbs are in sync 
+#
+# NOTE:
+#   - Synchrinize module: 
+#     I had to modify the /etc/ansible/ansible.cfg file in order to have this code working
+#     I added -o ForwardAgent=yes to the ssh_args setting
+#
+#   - {{ ansible_fqdn }}: 
+#     The remote hostname where the script is being executed -> debian1.local.ca
+#
+#   - {{ ansible_hostname }}: 
+#     The remote hostname where the script is being executed -> debian1
+#
+# Troubleshooting:
+#   When the synchronization hangs:
+#     - Deb 1 needs Deb2 ssh public key because Deb 1 is the source (mode=pull) of the dump file from deb1 (ssh-copy-id -i ~/.ssh/id_rsa cesar@192.168.56.101)
+#     - remote_user=root does not need to be UNcommented in /etc/ansible/ansible.cfn
+
+---
+- hosts: dbservers
+  become: true
+  roles:
+    - mysql
+
+- hosts: debian1
+  become: true
+  tasks:
+    - name: Add more data to employees db to have a different data than Debian2's employees db
+      mysql_db:  
+        state: import
+        name: employees
+        target: /tmp/test_db/extra_employees.dump
+
+- hosts: dbservers
+  become: true
+  vars:
+    dump_file_name: dump_employees
+    info_host: "{{ ansible_fqdn }}"
+  tasks:
+    - name: Creates a dump of the employees db and store it in /tmp
+      mysql_db:
+        state: dump
+        name: employees
+        target: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+
+- hosts: debian1
+  vars:
+    dump_file_name: dump_employees
+    info_host: "{{ ansible_fqdn }}"
+  tasks:
+    - name: Copy dump deb1 to local (deb2)
+      synchronize:
+        src: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+        dest: /tmp
+        mode: pull
+      delegate_to: "{{ groups.debian2[0] }}"
+    - name: Apply dump
+      become: true
+      mysql_db:
+        state: import
+        name: employees
+        target: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+      delegate_to: "{{ groups.debian2[0] }}"
