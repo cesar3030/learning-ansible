@@ -1,4 +1,4 @@
-# The script adds a mysql role to the servers, then imports more data in the debian1 db, 
+# The playbook adds a mysql role to the db servers, then imports more data in the debian1 db, 
 #  makes a dump of both debian1 and 2 dbs, transfers dumb debian1 in debian2 and applies debian1's dump to debian2's db that way dbs are in sync 
 #
 # NOTE:

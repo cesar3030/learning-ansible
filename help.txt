@@ -14,8 +14,5 @@ ansible all -m file -a "dest=~/dir_from/ansible mode=755 owner=cesar group=cesar
 # delete un dossier recussivement 
 ansible all -m file -a "dest=~/dir_from state=absent"
 
-# check qu'un packet est installe
+# check si packet est installe
 ansible all -m apt -a "name=acme state=present"
-# ajoute un packet
-
-#supprime un packet`

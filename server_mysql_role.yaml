@@ -1,6 +1,6 @@
 # Has to be called with -K flag to provide remote sudo pwd
 ---
-- hosts: debian2
+- hosts: dbservers
   become: true
   roles:
     - mysql

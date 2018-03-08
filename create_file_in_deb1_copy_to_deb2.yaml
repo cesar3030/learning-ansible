@@ -1,7 +1,11 @@
 # NOTE:
 #  I had to modify the /etc/ansible/ansible.cfg file in order to have this code working
 #  I added -o ForwardAgent=yes to the ssh_args setting
-#
+#  
+# Troubleshooting:
+#   When the synchronization hangs:
+#     - Deb 2 needs Deb1 ssh public key (ssh-copy-id -i ~/.ssh/id_rsa cesar@192.168.56.102)
+#     - remote_user=root does not need to be UNcommented in /etc/ansible/ansible.cfn
 
 ---
 - hosts: debian1
