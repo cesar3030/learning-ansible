@@ -98,7 +98,7 @@ Réponse:
 }
 ```
 ### Changer les permissions d'un fichier
-Cette commande va changer la permission sur les serveurs remote du fichier au path spécifié: `ansible all -m file -a "dest=~/test.txt mode=777"`  
+Cette commande va changer la permission sur les serveurs remote du fichier au path spécifié: `ansible dbservers -m file -a "dest=/tmp/test.txt mode=777"`  
 Réponse:
 ```
 192.168.56.101 | SUCCESS => {
