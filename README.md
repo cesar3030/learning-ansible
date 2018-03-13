@@ -66,7 +66,7 @@ debian2
 
 ### Copier un fichier du serveur Ansible aux serveurs remote
 Cette commande copie le fichier `text.txt` situé dans le répertoire `/tmp` du serveur Ansible dans le dossier `/tmp` des serveurs remote.
-`ansible dbservers -m copy -a "src=/tmp/test.txt dest=/tmp"`
+`ansible dbservers -m copy -a "src=/tmp/test.txt dest=/tmp"`  
 Réponse:
 ```
 192.168.56.101 | SUCCESS => {
@@ -97,3 +97,32 @@ Réponse:
 	"uid": 1000
 }
 ```
+### Changer les permissions d'un fichier
+Cette commande va changer la permission sur les serveurs remote du fichier au path spécifié: `ansible all -m file -a "dest=~/test.txt mode=777"`  
+Réponse:
+```
+192.168.56.101 | SUCCESS => {
+	"changed": true,
+	"gid": 1000,
+	"group": "cesar",
+	"mode": "0777",
+	"owner": "cesar",
+	"path": "/tmp/test.txt"
+	"size": 0,
+	"state": "file",
+	"uid": 1000
+}
+
+192.168.56.102 | SUCCESS => {
+	"changed": true,
+	"gid": 1000,
+	"group": "cesar",
+	"mode": "0777",
+	"owner": "cesar",
+	"path": "/tmp/test.txt"
+	"size": 0,
+	"state": "file",
+	"uid": 1000
+}
+```
+Note: On peut aussi changer le owner, le groupe du fichier via cette commande
