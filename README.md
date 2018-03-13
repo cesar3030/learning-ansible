@@ -22,9 +22,26 @@ iface enp0s8 inet static
 address 192.168.56.100
 netmask 255.255.255.0
 ```
-Ici nous assignons l'ip `192.168.56.100` au serveur.
+Ici nous assignons l'ip `192.168.56.100` au serveur.  
 3. Editer le fichier `/etc/hostname` pour donner un nom a votre machine. Dans cet exemple nous avons: 
 * ansible-server (ip: 192.168.56.100)
 * debian-1 (ip: 192.168.56.101)
 * debians-2 (ip: 192.168.56.102)
 4. Editer le fichier `etc/hosts` en y ajoutant l'ip du serveur suivi de son hostname. Exemple: `192.168.56.100	ansible-server`.
+
+### Pour le serveur Ansible
+Dans cet exemple le serveur Ansible est le serveur Debian ayant l'ip: 192.168.56.100.
+1. Installer Ansible: [Instructions ici](http://docs.ansible.com/ansible/latest/intro_installation.html#latest-releases-via-apt-debian)
+2. Ajouter les serveurs remote au fichier `/etc/ansible/hosts`. 
+```
+[dbservers]
+192.168.56.101
+192.168.56.102
+
+[debian1]
+192.168.56.101
+
+[debian2]
+192.168.56.102
+```
+Ici nous créons trois groupes de serveurs. Nos deux serveurs remote (192.168.56.101 et 192.168.56.102) seront des serveurs de BD. Afin d'executer des commandes sur tous les serveurs de BD à la fois, nous créons un groupe **dbservers** avec l'ip de nos deux serveurs. Deux groupes **debians1** et **debian2** permettenent d'acceder à chaque serveur remote individuellement.
