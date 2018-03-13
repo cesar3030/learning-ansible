@@ -126,3 +126,34 @@ Réponse:
 }
 ```
 Note: On peut aussi changer le owner, le groupe du fichier via cette commande
+
+### Créer un dossier
+Cette commande créé la structure de dossiers `dir_from/ansible/` sur les serveurs remote dans le dossier `/tmp`. De plus, ces dossiers auront le mode, l'owner et le groupe.
+`ansible dbserver -m file -a "dest=/tmp/dir_from/ansible mode=755 owner=cesar group=cesar state=directory"`  
+Réponse
+```
+192.168.56.101 | SUCCESS => {
+	"changed": true,
+	"gid": 1000,
+	"group": "cesar",
+	"mode": "0755",
+	"owner": "cesar",
+	"path": "/tmp/dir_from/ansible"
+	"size": 4096,
+	"state": "directory",
+	"uid": 1000
+}
+
+192.168.56.102 | SUCCESS => {
+	"changed": true,
+	"gid": 1000,
+	"group": "cesar",
+	"mode": "0755",
+	"owner": "cesar",
+	"path": "/tmp/dir_from/ansible"
+	"size": 4096,
+	"state": "directory",
+	"uid": 1000
+}
+
+```
