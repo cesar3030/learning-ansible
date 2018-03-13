@@ -52,7 +52,9 @@ Votre serveur Ansible est désormait pret à etre utilisé!!
 ## Ansible: Command Line
 Il est possible d'utiliser Ansible pour effectuer de simples manipulations sur des serveurs remote via le command line. La syntaxe de base est la suivante: `ansible <host_groupe> -m <nom_du_module> -a <arguments_du_module>`.  
 Voici une liste non exaustives des opérations possibles de faire:
-* Exécuter la commande shell `cat /etc/hostname` sur tous les serveurs BD (`dbservers`)  afin de nous retourner le hostname de chaque serveur: `ansible dbservers -m shell -a 'cat /etc/hostname'`  
+
+### Executer une commande Shell
+Exécuter la commande shell `cat /etc/hostname` sur tous les serveurs BD (`dbservers`)  afin de retourner le hostname de chaque serveur: `ansible dbservers -m shell -a 'cat /etc/hostname'`  
 Réponse: 
 ```
 192.168.56.101 | SUCCESS | rc=0 >>
@@ -60,4 +62,38 @@ debian1
 
 192.168.56.102 | SUCCESS | rc=0 >>
 debian2
+```
+
+### Copier un fichier du serveur Ansible aux serveurs remote
+Cette commande copie le fichier `text.txt` situé dans le répertoire `/tmp` du serveur Ansible dans le dossier `/tmp` des serveurs remote.
+`ansible dbservers -m copy -a "src=/tmp/test.txt dest=/tmp"`
+Réponse:
+```
+192.168.56.101 | SUCCESS => {
+	"changed": true,
+	"dest": "/tmp/test.txt",
+	"checksum": "fef4ew6g41rgwg46wrg6r4g65wr4g65rwg"
+	"gid": 1000,
+	"group": "cesar",
+	"mode": "0644",
+	"owner": "cesar",
+	"size": 0,
+	"src": "/home/cesar/.ansible/tmp/ansible-tmp-1520948277.38-486454654561/source",
+	"state": "file",
+	"uid": 1000
+}
+
+192.168.56.102 | SUCCESS => {
+	"changed": true,
+	"dest": "/tmp/test.txt",
+	"checksum": "fef4ew6g41rgwg46wrg6r4g65wr4g65rwg"
+	"gid": 1000,
+	"group": "cesar",
+	"mode": "0644",
+	"owner": "cesar",
+	"size": 0,
+	"src": "/home/cesar/.ansible/tmp/ansible-tmp-1520948277.38-486454654561/source",
+	"state": "file",
+	"uid": 1000
+}
 ```
