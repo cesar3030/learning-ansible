@@ -45,3 +45,6 @@ Dans cet exemple le serveur Ansible est le serveur Debian ayant l'ip: 192.168.56
 192.168.56.102
 ```
 Ici nous créons trois groupes de serveurs. Nos deux serveurs remote (192.168.56.101 et 192.168.56.102) seront des serveurs de BD. Afin d'executer des commandes sur tous les serveurs de BD à la fois, nous créons un groupe **dbservers** avec l'ip de nos deux serveurs. Deux groupes **debians1** et **debian2** permettenent d'acceder à chaque serveur remote individuellement.
+3. Partager la cle publique SSH du serveur Ansible avec les remote: `ssh-copy-id -i ~/.ssh/id_rsa <votre_user>@192.168.556.101` et `ssh-copy-id -i ~/.ssh/id_rsa <votre_user>@192.168.556.102`
+
+Votre serveur Ansible est désormait pret à etre utilisé
