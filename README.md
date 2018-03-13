@@ -52,4 +52,12 @@ Votre serveur Ansible est désormait pret à etre utilisé!!
 ## Ansible: Command Line
 Il est possible d'utiliser Ansible pour effectuer de simples manipulations sur des serveurs remote via le command line. La syntaxe de base est la suivante: `ansible <host_groupe> -m <nom_du_module> -a <arguments_du_module>`.  
 Voici une liste non exaustives des opérations possibles de faire:
-* Exécuter la commande shell `cat /etc/hostname` sur tous les serveurs BD (`dbservers`)  afin de nous retourner le hostname de chaque serveur: `ansible dbservers -m shell -a 'cat /etc/hostname'` 
+* Exécuter la commande shell `cat /etc/hostname` sur tous les serveurs BD (`dbservers`)  afin de nous retourner le hostname de chaque serveur: `ansible dbservers -m shell -a 'cat /etc/hostname'`  
+Réponse: 
+```
+192.168.56.101 | SUCCESS | rc=0 >>
+debian1
+
+192.168.56.102 | SUCCESS | rc=0 >>
+debian2
+```
