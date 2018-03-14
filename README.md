@@ -236,8 +236,8 @@ Ce playbook introduit la notion de variables. Il est possible de définir des va
 ```yaml
 ---
 - hosts: dbservers
-  vars :
-    file_name: file_from_ansible_variable_name.txt
+  vars : 											# <== Liste de variables
+    file_name: file_from_ansible_variable_name.txt 
   tasks:
     - name: Create a new file in /tmp
       file:
@@ -245,6 +245,33 @@ Ce playbook introduit la notion de variables. Il est possible de définir des va
         state: touch
 ```
 ### Créer un fichier depuis un template
+Ce playbook initialise des variable, et créé un fichier `index.html` dans le dossier `/tmp` des serveurs basé sur le template situé dans le dossier `templates/`. Le template est une page HTML dans laquelle on va remplacer `{{ page_title }}` et `{{ page_body }}` par les valeurs des variables initialisées dans la partie **vars** du playbook.
+```yaml
+---
+- hosts: dbservers
+  vars :
+    page_title: My first template use!
+    page_body: Hello World!
+    filename: index.html
+  tasks:
+    - name: Create a new file in /tmp
+      template:
+        src: templates/index.html.j2  # Va chercher le template dans le dossier `templates/`
+        dest: /tmp/{{filename}}
+```
+Template: Page HTML `template/index.html.j2`:
+```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>{{ page_title }}</title>
+	</head>
+	<body>
+		{{ page_body }}
+	</body>
+</html>
+```
 ### Copier un fichier d'un serveur distant à un autre serveur distant
 ### Créer un fichier sur un serveur remote et le copier sur un autre serveur distant
 ### Un serveur distant ping un autre serveur distant
