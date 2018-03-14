@@ -311,10 +311,22 @@ Les roles ansible permettent d'effectuer des configurations de serveur facilemen
 Visiter [cette page](http://docs.ansible.com/ansible/latest/playbooks_reuse_roles.html) pour plus d'informations.
 #### Common role
 Common role est est role que je veux appliquer à tous mes serveurs. Ce role installe des packages de base comme rsync pour que les serveurs puissent transferer des fichiers entre eux.  
-Definition des variables dans `roles/common/defaults/main.yaml`:
+Definition des variables dans `roles/common/defaults/main.yaml`. La liste de paquets à installer est défini dans ce fichier.
 ```yaml
+packages:
+  - rsync
+  - iputils-ping
+```
+Définition des taches à exécuter pour ce role dans `roles/common/tasks/main.yaml`. La seule tache consiste à installer tous les paquets via apt.
+```yaml
+- name: install packages defined in defaults/main.yaml
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages }}"
 ```
 #### MySQL role
+Le role MySQL sert a installer et configurer MySQL sur le serveur.
 ### Dump une base de données
 ### Dump, Copie le dump sur un autre serveur distant et l'applique au serveur distant
 ### Drop une base de données
