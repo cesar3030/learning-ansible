@@ -204,13 +204,13 @@ Note: On peut aussi installer ou désinstaller des paquets via ce module en util
 
 ## Ansible: Playbook
 
-Ansible Playbook sont des fichiers YAML permettant d'exécuter une succession de taches sur un ou plusieurs groupes de serveurs.
-Exemple de playbook avec une tache consernant les hosts `dbservers`.
+Ansible Playbook sont des fichiers YAML permettant d'exécuter une succession de tâches sur un ou plusieurs groupes de serveurs.
+Exemple de playbook avec une tâche consernant les hosts `dbservers`.
 ```yaml
 ---
 - hosts: dbservers		# <== nom du groupe de serveurs sur lesquels opérer
-  tasks:		# <== liste des taches à exécuter sur les serveurs du groupe
-    - name: Create a new file in /tmp 	# <== Nom de la tache
+  tasks:		# <== liste des tâches à exécuter sur les serveurs du groupe
+    - name: Create a new file in /tmp 	# <== Nom de la tâche
       file:								# <== Nom du module utilisé
         path: /tmp/test_no_var.txt 		# <== Argument path du module file et sa valeur 
         state: touch					# <== Argument state du module file et sa valeur 
@@ -285,7 +285,7 @@ Template: Page HTML `template/index.html.j2`:
 ```
 
 ### Créer un fichier sur un serveur remote et le copier sur un autre serveur distant
-Ce playbook se connecte sur le groupe debian1(composé d'une seule machine) pour créer un fichier. Ensuite, Ansible se connecte au groupe debian2 (composé lui aussi d'une seule machine) et va se faire envoyer par la machine du groupe debian1 le fichier `file_from_debian1.txt`. Ce fichier en provenance de debian1 (car la tache est déléguée à debian1 `delegate_to: "{{ groups.debian1[0] }}"`) va être copier sur la machine courante (debian2) dans le dossier `/tmp`.
+Ce playbook se connecte sur le groupe debian1(composé d'une seule machine) pour créer un fichier. Ensuite, Ansible se connecte au groupe debian2 (composé lui aussi d'une seule machine) et va se faire envoyer par la machine du groupe debian1 le fichier `file_from_debian1.txt`. Ce fichier en provenance de debian1 (car la tâche est déléguée à debian1 `delegate_to: "{{ groups.debian1[0] }}"`) va être copier sur la machine courante (debian2) dans le dossier `/tmp`.
 ```yaml
 ---
 - hosts: debian1
@@ -322,15 +322,16 @@ Ce playbook se connecte sur la machine du groupe debian2 et délègue la tâche 
 ## Ansible roles
 Les roles ansible permettent d'effectuer des configurations de serveur facilement réutilisable. Cela permet entre autre d'installer des packages, créer des fichiers de configuration, changer des permissions sur des fichiers et/ou dossiers, etc.  
 Visiter [cette page](http://docs.ansible.com/ansible/latest/playbooks_reuse_roles.html) pour plus d'informations.
-### Common role
-**Common** role est role que je veux appliquer à tous mes serveurs. Ce role installe des packages de base comme rsync pour que les serveurs puissent transferer des fichiers entre eux.  
-Definition des variables dans `roles/common/defaults/main.yaml`. La liste de paquets à installer est défini dans ce fichier.
+### Common rôle
+**Common** rôle est un rôle destiné à être appliquer à tous les serveurs. Ce rôle installe des packages de base comme rsync pour que les serveurs puissent transférer des fichiers entre eux.  
+
+* Définition des variables dans `roles/common/defaults/main.yaml`. La liste de paquets à installer est défini dans ce fichier.
 ```yaml
 packages:
   - rsync
   - iputils-ping
 ```
-Définition des taches à exécuter pour ce role dans `roles/common/tasks/main.yaml`. La seule tache consiste à installer tous les paquets via apt.
+* Définition des tâches à exécuter pour ce rôle dans `roles/common/tasks/main.yaml`. La seule tâche de ce rôle consiste à installer tous les paquets via apt.
 ```yaml
 - name: install packages defined in defaults/main.yaml
   apt:
@@ -338,13 +339,13 @@ Définition des taches à exécuter pour ce role dans `roles/common/tasks/main.y
     state: present
   with_items: "{{ packages }}"
 ```
-### MySQL role
-Le role MySQL sert a installer et configurer MySQL sur le serveur.
-* Definition des variables dans `roles/mysql/defaults/main.yaml`. La variable sert a définir le mot de passe root.
+### MySQL rôle
+Le rôle MySQL sert à installer et configurer MySQL sur le serveur distant.
+* Définition des variables dans `roles/mysql/defaults/main.yaml`. La variable `mysql_root_password` sert à définir le mot de passe root de MySQL.
 ```yaml
 mysql_root_password: root
 ```
-* Stockage des templates à utiliser pour ce role dans `roles/mysql/templates`. Ce role dispose du template `.my.cnf.j2` permettant de générer un fichier `.my.cnf` avec la variable **mysql_root_password** du role.
+* Stockage des templates à utiliser pour ce rôle dans `roles/mysql/templates`. Ce rôle dispose du template `.my.cnf.j2` permettant de générer un fichier `.my.cnf` avec la valeur de la variable **mysql_root_password** du rôle.
 ```cnf
 [client]
 port		= 3306
@@ -352,9 +353,9 @@ socket		= /var/run/mysqld/mysqld.sock
 user 		= root
 password 	= {{mysql_root_password}}
 ```
-* Stockage des fichiers utilisés poru le role dans `roles/mysql/files`. Le role **mysql** a une tache de création d'une base de données et d'impostation de données dans celle-ci. Cette tache se fait via l'excution de scripts SQL stockés dans `roles/mysql/files/test_db`.  
+* Stockage des fichiers utilisés pour le rôle dans `roles/mysql/files`. Le rôle **mysql** est constitué de tâches de création d'une base de données et d'importation de données dans celle-ci. La création de la base de données ainsi que l'importation de données se fait via l'exécution de scripts SQL stockés dans `roles/mysql/files/test_db`.  
 
-* Définition des taches à exécuter pour ce role dans `roles/mysql/tasks/main.yaml`. De nombreuses taches sont effectuées pour installer et configurer le serveur. La description de chaqune d'entre elle est donné par son attribut `name`:
+* Définition des tâches à exécuter pour ce rôle dans `roles/mysql/tasks/main.yaml`. De nombreuses tâches sont effectuées pour installer et configurer le serveur. La description de chacune d'entre elles est donnée par son attribut `name`:
 ```yaml
 - name: Install MySQL required packages
   apt:
@@ -402,9 +403,9 @@ password 	= {{mysql_root_password}}
     name: all
     target: /tmp/test_db/employees.sql
 ```
-### Exemples de playbook utilisant un role
+### Exemples de playbook utilisant un rôle
 #### Copier un fichier d'un serveur distant à un autre serveur distant
-Ce playbook applique le **common** role aux serveurs remote afin qu'ils aient les paquets nécessaires pour faire la synchronisation de fichier (package rsync) et effectue ensuite la copie d'un fichier du serveur debian1 au serveur debian2.
+Ce playbook applique le **common** rôle aux serveurs remote afin qu'ils aient les paquets nécessaires pour faire la synchronisation de fichiers (package rsync). Il effectue ensuite la copie d'un fichier du serveur debian1 au serveur debian2.
 ```yaml
 ---
 - hosts: dbservers
@@ -424,7 +425,7 @@ Ce playbook applique le **common** role aux serveurs remote afin qu'ils aient le
 ``` 
 
 #### Dump une base de données
-Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas on fait un dump de la base de données **employees** et le sauvegardons dans `/tmp/dump_employees.sql`. On peut noter la présence du role **mysql** dans ce playbook, cela veut dire que le serveur se vera installer et configurer MySQL si ce n'est pas déja fait. On utilise l'option `become: true` afin qu'ansible se connecte en temps que root sur le serveur remote. Il faudra donc exécuter ce playbook en utilisant l'option **-K** et entrer le mot de passe root lorsque demandé.
+Ce playbook permet de faire un dump d'une base de données MySQL. Dans notre cas on fait un dump de la base de données **employees** et le sauvegardons dans `/tmp/dump_employees.sql`. On peut noter la présence du rôle **mysql** dans ce playbook, cela permettra d'installer et de configurer MySQL si ce n'est pas déjà fait. On utilise l'option `become: true` afin qu'Ansible se connecte en tant que root sur le serveur remote. Il faudra donc exécuter ce playbook en utilisant l'option **-K** et entrer le mot de passe root lorsque demandé.
 ```yaml
 ---
 - hosts: dbservers
@@ -441,7 +442,7 @@ Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas 
         target: /tmp/{{dump_file_name}}
 ```
 #### Applique un dump sur un serveur distant
-Ce playbook. S'assure que le serveur a bien un role mysql, se connecte sur debian1 pour ajouter des données dans la BD afin dàvoir une version différente de cette de la BD de debian2. Un dump de tous les serveurs de base de données (debian1 et debian2) est fait. Le dump de debians1 est ensuite copié dans debian2 qui va l'appliquer à sa base de données pour avoir une version identique à celle de debian1.
+Ce playbook s'assure que le serveur a bien un rôle **mysql**.  Il se connecte ensuite sur debian1 pour ajouter des données dans la base de données afin d'avoir une version différente de la base de données du serveur debian2. Un dump de tous les serveurs de base de données (debian1 et debian2) est alors fait. Le dump de debians1 est ensuite copié dans debian2 qui va l'appliquer à sa base de données pour avoir une base de données identique à celle de debian1.
 ```yaml
 ---
 - hosts: dbservers
@@ -490,7 +491,7 @@ Ce playbook. S'assure que le serveur a bien un role mysql, se connecte sur debia
       delegate_to: "{{ groups.debian2[0] }}"
 ```
 ### Drop une base de données
-Ce playbook permet d'effacer une base de données. Dans notre cas, nous supprimons la base de données **employee**.
+Ce playbook permet de supprimer une base de données. Dans notre cas, nous supprimons la base de données **employee**.
 ```yaml
 ---
 - hosts: dbservers
