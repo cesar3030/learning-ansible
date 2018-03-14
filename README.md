@@ -157,3 +157,40 @@ Réponse
 }
 
 ```
+
+### Supprimer un dossier
+Cette commande supprime le dossier spécifié en argument ainsi que ses sous dossiers.
+`ansible dbservers -m file -a "dest=/tmp/dir_from state=absent"`  
+Réponse
+```
+192.168.56.101 | SUCCESS => {
+	"changed": true,
+	"path": "/tmp/dir_from/ansible"
+	"state": "absent"
+}
+
+192.168.56.102 | SUCCESS => {
+	"changed": true,
+	"path": "/tmp/dir_from/ansible"
+	"state": "absent"
+}
+```
+
+### S'assurer qu'un packet est installé
+Cette commande vérifie que le packet sudo est bien présent sur le serveur remote
+`ansible dbservers apt -a "name=sudo state=installed"`  
+Réponse
+```
+192.168.56.101 | SUCCESS => {
+	"cache_update_time": 1520017448,
+	"cache_updated": false,
+	"changed": false
+}
+
+192.168.56.102 | SUCCESS => {
+	"cache_update_time": 1520017449,
+	"cache_updated": false,
+	"changed": false
+}
+```  
+Note: On peut aussi installer ou désinstaller des packets via ce module en utilisant l'argument `state=present` ou `state=absent`

@@ -16,3 +16,13 @@ ansible all -m file -a "dest=~/dir_from state=absent"
 
 # check si packet est installe
 ansible all -m apt -a "name=acme state=present"
+
+ansible --deploy-sshkey[s] groupe_ansible
+for i in $(cat list.txt); echo -e "\n // $i "do ssh-copy-id user@$i; done
+
+main.yml
+hosts: groupe
+
+-- include : db1.yml
+--include : db2.yaml
+-- process.yml
