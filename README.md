@@ -327,11 +327,11 @@ Définition des taches à exécuter pour ce role dans `roles/common/tasks/main.y
 ```
 #### MySQL role
 Le role MySQL sert a installer et configurer MySQL sur le serveur.
-Definition des variables dans `roles/mysql/defaults/main.yaml`. La variable sert a définir le mot de passe root.
+* Definition des variables dans `roles/mysql/defaults/main.yaml`. La variable sert a définir le mot de passe root.
 ```yaml
 mysql_root_password: root
 ```
-Stockage des templates à utiliser pour ce role dans `roles/mysql/templates`. Ce role dispose du template `.my.cnf.j2` permettant de générer un fichier `.my.cnf` avec la variable **mysql_root_password** du role.
+* Stockage des templates à utiliser pour ce role dans `roles/mysql/templates`. Ce role dispose du template `.my.cnf.j2` permettant de générer un fichier `.my.cnf` avec la variable **mysql_root_password** du role.
 ```cnf
 [client]
 port		= 3306
@@ -339,9 +339,9 @@ socket		= /var/run/mysqld/mysqld.sock
 user 		= root
 password 	= {{mysql_root_password}}
 ```
-Stockage des fichiers utilisés poru le role dans `roles/mysql/files`. Le role **mysql** a une tache de création d'une base de données et d'impostation de données dans celle-ci. Cette tache se fait via l'excution de scripts SQL stockés dans `roles/mysql/files/test_db`.  
+* Stockage des fichiers utilisés poru le role dans `roles/mysql/files`. Le role **mysql** a une tache de création d'une base de données et d'impostation de données dans celle-ci. Cette tache se fait via l'excution de scripts SQL stockés dans `roles/mysql/files/test_db`.  
 
-Définition des taches à exécuter pour ce role dans `roles/mysql/tasks/main.yaml`. De nombreuses taches sont effectuées pour installer et configurer le serveur. La description de chaqune d'entre elle est donné par son attribut `name`:
+* Définition des taches à exécuter pour ce role dans `roles/mysql/tasks/main.yaml`. De nombreuses taches sont effectuées pour installer et configurer le serveur. La description de chaqune d'entre elle est donné par son attribut `name`:
 ```yaml
 - name: Install MySQL required packages
   apt:
