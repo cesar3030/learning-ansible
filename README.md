@@ -194,3 +194,21 @@ Réponse
 }
 ```  
 Note: On peut aussi installer ou désinstaller des packets via ce module en utilisant l'argument `state=present` ou `state=absent`
+
+## Ansible: Playbook
+
+Ansible Playbook sont des fichiers YAML permettant d'executer une succession de taches sur un ou plusieurs groupes de serveurs.
+
+### Créer un fichier
+### Créer un fichier avec un nom contenu dans une variable
+### Créer un fichier depuis un template
+### Copier un fichier d'un serveur distant à un autre serveur distant
+### Créer un fichier sur un serveur remote et le copier sur un autre serveur distant
+### Un serveur distant ping un autre serveur distant
+
+### Ansible roles
+#### Server role
+#### MySQL role
+### Dump une base de données
+### Dump, Copie le dump sur un autre serveur distant et l'applique au serveur distant
+### Drop une base de données
