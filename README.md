@@ -327,6 +327,68 @@ Définition des taches à exécuter pour ce role dans `roles/common/tasks/main.y
 ```
 #### MySQL role
 Le role MySQL sert a installer et configurer MySQL sur le serveur.
+Definition des variables dans `roles/mysql/defaults/main.yaml`. La variable sert a définir le mot de passe root.
+```yaml
+mysql_root_password: root
+```
+Stockage des templates à utiliser pour ce role dans `roles/mysql/templates`. Ce role dispose du template `.my.cnf.j2` permettant de générer un fichier `.my.cnf` avec la variable **mysql_root_password** du role.
+```cnf
+[client]
+port		= 3306
+socket		= /var/run/mysqld/mysqld.sock
+user 		= root
+password 	= {{mysql_root_password}}
+```
+Stockage des fichiers utilisés poru le role dans `roles/mysql/files`. Le role **mysql** a une tache de création d'une base de données et d'impostation de données dans celle-ci. Cette tache se fait via l'excution de scripts SQL stockés dans `roles/mysql/files/test_db`.  
+
+Définition des taches à exécuter pour ce role dans `roles/mysql/tasks/main.yaml`. De nombreuses taches sont effectuées pour installer et configurer le serveur. La description de chaqune d'entre elle est donné par son attribut `name`:
+```yaml
+- name: Install MySQL required packages
+  apt:
+    name: "{{item}}" 
+    state: present
+  with_items:
+    - mysql-server
+    - mysql-client
+    - python-mysqldb
+
+- name: Start the MySQL service
+  action: service name=mysql state=started 
+
+- name: Remove the test database
+  mysql_db: name=test state=absent
+
+- name: Create deploy user for mysql
+  mysql_user: user="deploy" host="%" password={{mysql_root_password}} priv=*.*:ALL,GRANT
+
+- name: Ensure anonymous users are not in the database
+  mysql_user: user='' host={{item}} state=absent
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Copy .my.cnf file with root password credentials
+  template: src=.my.cnf.j2 dest=/etc/mysql/my.cnf owner=root mode=0600
+
+- name: Update mysql root password for all root accounts
+  mysql_user: name=root host={{item}} password={{mysql_root_password}}
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Copy the folder that contains sql files from control to remote
+  copy:
+    src: test_db
+    dest: /tmp
+
+- name: Import employees.sql similar to mysql -u <username> -p <password> < hostname.sql
+  mysql_db:
+    state: import
+    name: all
+    target: /tmp/test_db/employees.sql
+```
 ### Dump une base de données
 ### Dump, Copie le dump sur un autre serveur distant et l'applique au serveur distant
 ### Drop une base de données
