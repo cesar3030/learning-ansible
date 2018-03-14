@@ -243,11 +243,11 @@ Pour supprimer un fichier, utiliser le module **file** et procurer le *path* et 
         state: absent
 ```
 ### Créer un fichier avec un nom contenu dans une variable
-Ce playbook introduit la notion de variables. Il est possible de définir des variables dans un playbook pour ensuite les utiliser dans une tache ou dans un template. Ce playbook va créer le fichier `/tmp/file_from_ansible_variable_name.txt`.
+Ce playbook introduit la notion de variables. Il est possible de définir des variables dans un playbook pour ensuite les utiliser dans une tâche ou dans un template. Ce playbook va créer le fichier `file_from_ansible_variable_name.txt` dans le dossier `/tmp` du serveur remote.
 ```yaml
 ---
 - hosts: dbservers
-  vars : 											# <== Liste de variables
+  vars :  # <== On liste ci dessous les variables
     file_name: file_from_ansible_variable_name.txt 
   tasks:
     - name: Create a new file in /tmp
@@ -256,7 +256,7 @@ Ce playbook introduit la notion de variables. Il est possible de définir des va
         state: touch
 ```
 ### Créer un fichier depuis un template
-Ce playbook initialise des variables et créé un fichier `index.html` dans le dossier `/tmp` des serveurs basé sur le template situé dans le dossier `templates/`. Le template est une page HTML dans laquelle on va remplacer `{{ page_title }}` et `{{ page_body }}` par les valeurs des variables initialisées dans la partie **vars** du playbook.
+Ce playbook initialise des variables et créé un fichier `index.html` dans le dossier `/tmp` des serveurs remote. Le fichier `index.html` est basé sur le template situé dans le dossier `templates/`. Le template est une page HTML dans laquelle on va remplacer `{{ page_title }}` et `{{ page_body }}` par les valeurs des variables initialisées dans la partie **vars** du playbook.
 ```yaml
 ---
 - hosts: dbservers
@@ -283,9 +283,9 @@ Template: Page HTML `template/index.html.j2`:
   </body>
 </html>
 ```
-### Copier un fichier d'un serveur distant à un autre serveur distant
+
 ### Créer un fichier sur un serveur remote et le copier sur un autre serveur distant
-Ce playbook se connecte sur le groupe debian1(composé d'une seule machine) pour créer un fichier. Ensuite Ansible se connecte sur le groupe debian2 (composé lui aussi d'une machine) et va se faire envoyer par la machine du groupe debian1 le fichier `file_from_debian1.txt`. Ce fichier en provenance de debian1 (car la tache est déléguée à debian1 `delegate_to: "{{ groups.debian1[0] }}"`) va etre copier sur la machine courante (debian2) dans le dossier `/tmp`
+Ce playbook se connecte sur le groupe debian1(composé d'une seule machine) pour créer un fichier. Ensuite, Ansible se connecte au groupe debian2 (composé lui aussi d'une seule machine) et va se faire envoyer par la machine du groupe debian1 le fichier `file_from_debian1.txt`. Ce fichier en provenance de debian1 (car la tache est déléguée à debian1 `delegate_to: "{{ groups.debian1[0] }}"`) va être copier sur la machine courante (debian2) dans le dossier `/tmp`.
 ```yaml
 ---
 - hosts: debian1
@@ -307,8 +307,9 @@ Ce playbook se connecte sur le groupe debian1(composé d'une seule machine) pour
         dest: /tmp
       delegate_to: "{{ groups.debian1[0] }}"
 ```
+
 ### Un serveur distant ping un autre serveur distant
-Ce playbook se connecte sur la machine de debian2 et delegue la tache de ping à la machine du groupe debian1. La machine du groupe debian1 ping donc la machine du groupe debian2.
+Ce playbook se connecte sur la machine du groupe debian2 et délègue la tâche de ping à la machine du groupe debian1. La machine du groupe debian1 ping donc la machine du groupe debian2.
 ```yaml
 ---
 - hosts: debian2
@@ -317,11 +318,12 @@ Ce playbook se connecte sur la machine de debian2 et delegue la tache de ping à
       ping: 
       delegate_to: "{{ groups.debian1[0] }}" 
 ```
-### Ansible roles
-Les roles ansible permettent d'effectuer des configurations de serveur facilement réutilisable. Cela permet entre autre d'installer des packages, créer des fichiers de configuration, changer des permission sur des fichiers et/ou dossiers, etc  
+
+## Ansible roles
+Les roles ansible permettent d'effectuer des configurations de serveur facilement réutilisable. Cela permet entre autre d'installer des packages, créer des fichiers de configuration, changer des permissions sur des fichiers et/ou dossiers, etc.  
 Visiter [cette page](http://docs.ansible.com/ansible/latest/playbooks_reuse_roles.html) pour plus d'informations.
-#### Common role
-Common role est est role que je veux appliquer à tous mes serveurs. Ce role installe des packages de base comme rsync pour que les serveurs puissent transferer des fichiers entre eux.  
+### Common role
+**Common** role est role que je veux appliquer à tous mes serveurs. Ce role installe des packages de base comme rsync pour que les serveurs puissent transferer des fichiers entre eux.  
 Definition des variables dans `roles/common/defaults/main.yaml`. La liste de paquets à installer est défini dans ce fichier.
 ```yaml
 packages:
@@ -336,7 +338,7 @@ Définition des taches à exécuter pour ce role dans `roles/common/tasks/main.y
     state: present
   with_items: "{{ packages }}"
 ```
-#### MySQL role
+### MySQL role
 Le role MySQL sert a installer et configurer MySQL sur le serveur.
 * Definition des variables dans `roles/mysql/defaults/main.yaml`. La variable sert a définir le mot de passe root.
 ```yaml
@@ -400,12 +402,34 @@ password 	= {{mysql_root_password}}
     name: all
     target: /tmp/test_db/employees.sql
 ```
+### Exemples de playbook utilisant un role
+#### Copier un fichier d'un serveur distant à un autre serveur distant
+Ce playbook applique le **common** role aux serveurs remote afin qu'ils aient les paquets nécessaires pour faire la synchronisation de fichier (package rsync) et effectue ensuite la copie d'un fichier du serveur debian1 au serveur debian2.
+```yaml
+---
+- hosts: dbservers
+  become: true
+  roles:
+    - common
 
-### Dump une base de données
+- hosts: debian2
+  vars :
+    filename: ansible_deb.txt
+  tasks:
+    - name: Move file from debian1 to debian 2
+      synchronize:
+        src: /tmp/{{ filename }}
+        dest: /tmp
+      delegate_to: "{{ groups.debian1[0] }}"
+``` 
+
+#### Dump une base de données
 Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas on fait un dump de la base de données **employees** et le sauvegardons dans `/tmp/dump_employees.sql`. On peut noter la présence du role **mysql** dans ce playbook, cela veut dire que le serveur se vera installer et configurer MySQL si ce n'est pas déja fait. On utilise l'option `become: true` afin qu'ansible se connecte en temps que root sur le serveur remote. Il faudra donc exécuter ce playbook en utilisant l'option **-K** et entrer le mot de passe root lorsque demandé.
 ```yaml
 ---
 - hosts: dbservers
+  roles:
+    - mysql
   become: true
   vars:
     dump_file_name: dump_employees.sql
@@ -416,7 +440,7 @@ Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas 
         name: employees
         target: /tmp/{{dump_file_name}}
 ```
-### Applique un dump sur un serveur distant
+#### Applique un dump sur un serveur distant
 Ce playbook. S'assure que le serveur a bien un role mysql, se connecte sur debian1 pour ajouter des données dans la BD afin dàvoir une version différente de cette de la BD de debian2. Un dump de tous les serveurs de base de données (debian1 et debian2) est fait. Le dump de debians1 est ensuite copié dans debian2 qui va l'appliquer à sa base de données pour avoir une version identique à celle de debian1.
 ```yaml
 ---
@@ -470,6 +494,8 @@ Ce playbook permet d'effacer une base de données. Dans notre cas, nous supprimo
 ```yaml
 ---
 - hosts: dbservers
+  roles:
+    - mysql
   become: true
   vars:
     dump_file_name: dump_employees
