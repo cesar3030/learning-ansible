@@ -208,7 +208,8 @@ Exemple de playbook avec une tache consernant les hosts `dbservers`.
         path: /tmp/test_no_var.txt 		# <== Argument path du module file et sa valeur 
         state: touch					# <== Argument state du module file et sa valeur 
 ```
-
+### Executer un playbook
+Pour executer un playbook, faites: `ansible-playbook my_play_book.yaml [-K]`. L'option **-K** est a ajouter losque l'on veut se connecter en temps que root sur un serveur distant. Il permet de donner le mot de passe root.
 ### Créer un fichier
 Pour créer un fichier, utiliser le module **file** et procurer le *path* et le *state=touch*.
 ```yaml
@@ -389,6 +390,21 @@ password 	= {{mysql_root_password}}
     name: all
     target: /tmp/test_db/employees.sql
 ```
+
 ### Dump une base de données
+Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas on fait un dump de la base de données **employees** et le sauvegardons dans `/tmp/dump_employees.sql`. On peut noter la présence du role **mysql** dans ce playbook, cela veut dire que le serveur se vera installer et configurer MySQL si ce n'est pas déja fait. On utilise l'option `become: true` afin qu'ansible se connecte en temps que root sur le serveur remote. Il faudra donc executer ce playbook en utilisant l'option **-K** et entrer le mot de passe root lorsque demandé.
+```yaml
+---
+- hosts: dbservers
+  become: true
+  vars:
+    dump_file_name: dump_employees.sql
+  tasks:
+    - name: Creates a dump of the employees db and store it in /tmp
+      mysql_db:
+        state: dump
+        name: employees
+        target: /tmp/{{dump_file_name}}
+```
 ### Dump, Copie le dump sur un autre serveur distant et l'applique au serveur distant
 ### Drop une base de données
