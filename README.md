@@ -456,3 +456,25 @@ Ce playbook. S'assure que le serveur a bien un role mysql, se connecte sur debia
       delegate_to: "{{ groups.debian2[0] }}"
 ```
 ### Drop une base de données
+Ce playbook permet d'effacer une base de données. Dans notre cas, nous supprimons la base de données **employee**.
+```yaml
+---
+- hosts: dbservers
+  become: true
+  vars:
+    dump_file_name: dump_employees
+    info_host: "{{ ansible_fqdn }}"
+  tasks:
+    - name: Delete employees database
+      mysql_db:
+        name: employees
+        state: absent
+    - name: Delete dump in /tmp
+      file: 
+        path: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+        state: absent
+    - name: Delete test_db folder
+      file: 
+        path: /tmp/test_db
+        state: absent
+```
