@@ -232,6 +232,18 @@ Pour supprimer un fichier, utiliser le module **file** et procurer le *path* et 
         state: absent
 ```
 ### Créer un fichier avec un nom contenu dans une variable
+Ce playbook introduit la notion de variables. Il est possible de définir des variables dans un playbook pour ensuite les utiliser dans une tache ou dans un template. Ce playbook va créer le fichier `/tmp/file_from_ansible_variable_name.txt`.
+```yaml
+---
+- hosts: dbservers
+  vars :
+    file_name: file_from_ansible_variable_name.txt
+  tasks:
+    - name: Create a new file in /tmp
+      file:
+        path: /tmp/{{ file_name }}
+        state: touch
+```
 ### Créer un fichier depuis un template
 ### Copier un fichier d'un serveur distant à un autre serveur distant
 ### Créer un fichier sur un serveur remote et le copier sur un autre serveur distant
