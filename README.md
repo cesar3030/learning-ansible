@@ -204,19 +204,22 @@ Note: On peut aussi installer ou désinstaller des paquets via ce module en util
 
 ## Ansible: Playbook
 
-Ansible Playbook sont des fichiers YAML permettant d'executer une succession de taches sur un ou plusieurs groupes de serveurs.
+Ansible Playbook sont des fichiers YAML permettant d'exécuter une succession de taches sur un ou plusieurs groupes de serveurs.
 Exemple de playbook avec une tache consernant les hosts `dbservers`.
 ```yaml
 ---
-- hosts: dbservers          # <== nom du groupe de serveurs sur lesquels opérer
-  tasks:					# <== liste des taches à executer sur les serveurs du groupe
+- hosts: dbservers		# <== nom du groupe de serveurs sur lesquels opérer
+  tasks:		# <== liste des taches à exécuter sur les serveurs du groupe
     - name: Create a new file in /tmp 	# <== Nom de la tache
       file:								# <== Nom du module utilisé
         path: /tmp/test_no_var.txt 		# <== Argument path du module file et sa valeur 
         state: touch					# <== Argument state du module file et sa valeur 
 ```
-### Executer un playbook
-Pour executer un playbook, faites: `ansible-playbook my_play_book.yaml [-K]`. L'option **-K** est a ajouter losque l'on veut se connecter en temps que root sur un serveur distant. Il permet de donner le mot de passe root.
+### Exécuter un playbook
+Pour exécuter un playbook, faites:  
+`ansible-playbook my_play_book.yaml [-K]`  
+L'option **-K** est à ajouter losque l'on veut se connecter en temps que root sur un serveur remote afin de transmettre le mot de passe root.
+
 ### Créer un fichier
 Pour créer un fichier, utiliser le module **file** et procurer le *path* et le *state=touch*.
 ```yaml
@@ -399,7 +402,7 @@ password 	= {{mysql_root_password}}
 ```
 
 ### Dump une base de données
-Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas on fait un dump de la base de données **employees** et le sauvegardons dans `/tmp/dump_employees.sql`. On peut noter la présence du role **mysql** dans ce playbook, cela veut dire que le serveur se vera installer et configurer MySQL si ce n'est pas déja fait. On utilise l'option `become: true` afin qu'ansible se connecte en temps que root sur le serveur remote. Il faudra donc executer ce playbook en utilisant l'option **-K** et entrer le mot de passe root lorsque demandé.
+Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas on fait un dump de la base de données **employees** et le sauvegardons dans `/tmp/dump_employees.sql`. On peut noter la présence du role **mysql** dans ce playbook, cela veut dire que le serveur se vera installer et configurer MySQL si ce n'est pas déja fait. On utilise l'option `become: true` afin qu'ansible se connecte en temps que root sur le serveur remote. Il faudra donc exécuter ce playbook en utilisant l'option **-K** et entrer le mot de passe root lorsque demandé.
 ```yaml
 ---
 - hosts: dbservers
