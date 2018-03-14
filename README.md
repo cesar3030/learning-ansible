@@ -274,10 +274,46 @@ Template: Page HTML `template/index.html.j2`:
 ```
 ### Copier un fichier d'un serveur distant à un autre serveur distant
 ### Créer un fichier sur un serveur remote et le copier sur un autre serveur distant
-### Un serveur distant ping un autre serveur distant
+Ce playbook se connecte sur le groupe debian1(composé d'une seule machine) pour créer un fichier. Ensuite Ansible se connecte sur le groupe debian2 (composé lui aussi d'une machine) et va se faire envoyer par la machine du groupe debian1 le fichier `file_from_debian1.txt`. Ce fichier en provenance de debian1 (car la tache est déléguée à debian1 `delegate_to: "{{ groups.debian1[0] }}"`) va etre copier sur la machine courante (debian2) dans le dossier `/tmp`
+```yaml
+---
+- hosts: debian1
+  vars :
+    filename: file_from_debian1.txt
+  tasks:
+    - name: Create a file to be copy to debian2 later on 
+      file:
+        path: /tmp/{{ filename }}
+        state: touch
 
+- hosts: debian2
+  vars :
+    filename: file_from_debian1.txt
+  tasks:
+    - name: Move file from debian1 to debian 2
+      synchronize:
+        src: /tmp/{{ filename }}
+        dest: /tmp
+      delegate_to: "{{ groups.debian1[0] }}"
+```
+### Un serveur distant ping un autre serveur distant
+Ce playbook se connecte sur la machine de debian2 et delegue la tache de ping à la machine du groupe debian1. La machine du groupe debian1 ping donc la machine du groupe debian2.
+```yaml
+---
+- hosts: debian2
+  tasks:
+    - name: Ping debian2 from debian1
+      ping: 
+      delegate_to: "{{ groups.debian1[0] }}" 
+```
 ### Ansible roles
-#### Server role
+Les roles ansible permettent d'effectuer des configurations de serveur facilement réutilisable. Cela permet entre autre d'installer des packages, créer des fichiers de configuration, changer des permission sur des fichiers et/ou dossiers, etc  
+Visiter [cette page](http://docs.ansible.com/ansible/latest/playbooks_reuse_roles.html) pour plus d'informations.
+#### Common role
+Common role est est role que je veux appliquer à tous mes serveurs. Ce role installe des packages de base comme rsync pour que les serveurs puissent transferer des fichiers entre eux.  
+Definition des variables dans `roles/common/defaults/main.yaml`:
+```yaml
+```
 #### MySQL role
 ### Dump une base de données
 ### Dump, Copie le dump sur un autre serveur distant et l'applique au serveur distant

@@ -1,7 +1,5 @@
 ---
 - hosts: debian2
-  vars :
-    filename: file_from_debian1.txt
   tasks:
     - name: Ping debian2 from debian1
       ping: 
