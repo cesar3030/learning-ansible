@@ -406,5 +406,53 @@ Ce playbook permet de faire un dump d'une base de donnée MySQL. Dans notre cas 
         name: employees
         target: /tmp/{{dump_file_name}}
 ```
-### Dump, Copie le dump sur un autre serveur distant et l'applique au serveur distant
+### Applique un dump sur un serveur distant
+Ce playbook. S'assure que le serveur a bien un role mysql, se connecte sur debian1 pour ajouter des données dans la BD afin dàvoir une version différente de cette de la BD de debian2. Un dump de tous les serveurs de base de données (debian1 et debian2) est fait. Le dump de debians1 est ensuite copié dans debian2 qui va l'appliquer à sa base de données pour avoir une version identique à celle de debian1.
+```yaml
+---
+- hosts: dbservers
+  become: true
+  roles:
+    - mysql
+
+- hosts: debian1
+  become: true
+  tasks:
+    - name: Add more data to employees db to have a different data than Debian2's employees db
+      mysql_db:  
+        state: import
+        name: employees
+        target: /tmp/test_db/extra_employees.dump
+
+- hosts: dbservers
+  become: true
+  vars:
+    dump_file_name: dump_employees
+    info_host: "{{ ansible_fqdn }}"
+  tasks:
+    - name: Creates a dump of the employees db and store it in /tmp
+      mysql_db:
+        state: dump
+        name: employees
+        target: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+
+- hosts: debian1
+  vars:
+    dump_file_name: dump_employees
+    info_host: "{{ ansible_fqdn }}"
+  tasks:
+    - name: Copy dump deb1 to local (deb2)
+      synchronize:
+        src: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+        dest: /tmp
+        mode: pull
+      delegate_to: "{{ groups.debian2[0] }}"
+    - name: Apply dump
+      become: true
+      mysql_db:
+        state: import
+        name: employees
+        target: /tmp/{{ dump_file_name }}_{{ info_host }}.sql
+      delegate_to: "{{ groups.debian2[0] }}"
+```
 ### Drop une base de données
