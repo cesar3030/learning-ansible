@@ -441,7 +441,7 @@ Ce playbook permet de faire un dump d'une base de données MySQL. Dans notre cas
         name: employees
         target: /tmp/{{dump_file_name}}
 ```
-#### Applique un dump sur un serveur distant
+#### Appliquer un dump sur un serveur distant
 Ce playbook s'assure que le serveur a bien un rôle **mysql**.  Il se connecte ensuite sur debian1 pour ajouter des données dans la base de données afin d'avoir une version différente de la base de données du serveur debian2. Un dump de tous les serveurs de base de données (debian1 et debian2) est alors fait. Le dump de debians1 est ensuite copié dans debian2 qui va l'appliquer à sa base de données pour avoir une base de données identique à celle de debian1.
 ```yaml
 ---
