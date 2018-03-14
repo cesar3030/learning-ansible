@@ -245,7 +245,7 @@ Ce playbook introduit la notion de variables. Il est possible de définir des va
         state: touch
 ```
 ### Créer un fichier depuis un template
-Ce playbook initialise des variable, et créé un fichier `index.html` dans le dossier `/tmp` des serveurs basé sur le template situé dans le dossier `templates/`. Le template est une page HTML dans laquelle on va remplacer `{{ page_title }}` et `{{ page_body }}` par les valeurs des variables initialisées dans la partie **vars** du playbook.
+Ce playbook initialise des variables et créé un fichier `index.html` dans le dossier `/tmp` des serveurs basé sur le template situé dans le dossier `templates/`. Le template est une page HTML dans laquelle on va remplacer `{{ page_title }}` et `{{ page_body }}` par les valeurs des variables initialisées dans la partie **vars** du playbook.
 ```yaml
 ---
 - hosts: dbservers
@@ -263,13 +263,13 @@ Template: Page HTML `template/index.html.j2`:
 ```html
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>{{ page_title }}</title>
-	</head>
-	<body>
-		{{ page_body }}
-	</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ page_title }}</title>
+  </head>
+  <body>
+    {{ page_body }}
+  </body>
 </html>
 ```
 ### Copier un fichier d'un serveur distant à un autre serveur distant
