@@ -199,7 +199,7 @@ Note: On peut aussi installer ou désinstaller des packets via ce module en util
 
 Ansible Playbook sont des fichiers YAML permettant d'executer une succession de taches sur un ou plusieurs groupes de serveurs.
 Exemple de playbook avec une tache consernant les hosts `dbservers`.
-```YAML
+```yaml
 ---
 - hosts: dbservers          # <== nom du groupe de serveurs sur lesquels opérer
   tasks:					# <== liste des taches à executer sur les serveurs du groupe
@@ -211,7 +211,7 @@ Exemple de playbook avec une tache consernant les hosts `dbservers`.
 
 ### Créer un fichier
 Pour créer un fichier, utiliser le module **file** et procurer le *path* et le *state=touch*.
-```
+```yaml
 ---
 - hosts: dbservers
   tasks:
@@ -222,7 +222,7 @@ Pour créer un fichier, utiliser le module **file** et procurer le *path* et le 
 ```
 ### Supprimer un fichier
 Pour supprimer un fichier, utiliser le module **file** et procurer le *path* et le *state=absent*.
-```
+```yaml
 ---
 - hosts: dbservers
   tasks:

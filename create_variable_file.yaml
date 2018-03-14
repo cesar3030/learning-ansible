@@ -5,5 +5,5 @@
   tasks:
     - name: Create a new file in /tmp
       file:
-        path: /tmp/{{file_name}}
+        path: /tmp/{{ file_nam e}}
         state: touch
